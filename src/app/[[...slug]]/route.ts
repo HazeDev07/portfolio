@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
     });
   }
 
-  const key = `v50:${origin}`;
+  const key = `v56:${origin}`;
   let html = memory.get(key);
   if (!html) {
     html = prepareFramerHtml(raw, { pathname: "/", origin });

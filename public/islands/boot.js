@@ -1,20 +1,107 @@
 (function () {
+  const TITLE = "Haze · Desenvolvedor Full Stack";
+  const DESC =
+    "Desenvolvedor Full Stack. Crio sites, aplicações e sistemas com criatividade, atenção aos detalhes e propósito.";
+
+  function lockMeta() {
+    if (document.title !== TITLE) document.title = TITLE;
+    const titleNode = document.querySelector("head title");
+    if (titleNode && titleNode.textContent !== TITLE) titleNode.textContent = TITLE;
+    document
+      .querySelectorAll(
+        'meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="twitter:title"], meta[name="twitter:description"]',
+      )
+      .forEach((meta) => {
+        const name = meta.getAttribute("property") || meta.getAttribute("name") || "";
+        const next = name.includes("title") ? TITLE : DESC;
+        if (meta.getAttribute("content") !== next) meta.setAttribute("content", next);
+      });
+  }
+
+  function freezeHeaderHover() {
+    const CLOSED = "framer-v-14epcrf";
+    document
+      .querySelectorAll('nav[data-framer-name="Desktop Closed"], nav.haze-pc-header')
+      .forEach((nav) => {
+        const lock = () => {
+          const variants = [...nav.classList].filter((name) => name.startsWith("framer-v-"));
+          variants.forEach((name) => {
+            if (name !== CLOSED) nav.classList.remove(name);
+          });
+          if (!nav.classList.contains(CLOSED)) nav.classList.add(CLOSED);
+          nav.querySelectorAll('[data-framer-name="Out"]').forEach((out) => out.remove());
+          const mid = nav.querySelector('[data-framer-name="Mid"], .framer-jyjdtl');
+          if (mid) {
+            mid.style.setProperty("width", "48px", "important");
+            mid.style.setProperty("min-width", "48px", "important");
+            mid.style.setProperty("max-width", "48px", "important");
+          }
+        };
+        lock();
+        if (nav.dataset.hazeNoHover) return;
+        nav.dataset.hazeNoHover = "1";
+        const observer = new MutationObserver(() => {
+          observer.disconnect();
+          lock();
+          observer.observe(nav, {
+            attributes: true,
+            attributeFilter: ["class", "style"],
+            childList: true,
+            subtree: true,
+          });
+        });
+        observer.observe(nav, {
+          attributes: true,
+          attributeFilter: ["class", "style"],
+          childList: true,
+          subtree: true,
+        });
+        ["pointerenter", "pointerover", "pointermove", "mouseenter", "mouseover", "focusin"].forEach(
+          (type) => {
+            nav.addEventListener(type, (event) => event.stopImmediatePropagation(), true);
+          },
+        );
+      });
+  }
+
   function ensureHeader() {
     const narrow = window.matchMedia("(max-width: 809.98px)").matches;
     if (!narrow) {
       document.querySelectorAll("nav.haze-pc-header").forEach((node) => node.remove());
+      freezeHeaderHover();
       return;
     }
-    if (document.querySelector('nav[data-framer-name="Desktop Closed"]')) return;
-    if (document.querySelector("nav.haze-pc-header")) return;
+    if (document.querySelector('nav[data-framer-name="Desktop Closed"]')) {
+      freezeHeaderHover();
+      return;
+    }
+    if (document.querySelector("nav.haze-pc-header")) {
+      freezeHeaderHover();
+      return;
+    }
     const phone = document.querySelector('[data-framer-name="Phone Closed"]');
     const tpl = document.getElementById("haze-pc-header");
     const node = tpl && tpl.content && tpl.content.firstElementChild;
     if (!phone || !node || !phone.parentElement) return;
     phone.parentElement.insertBefore(node.cloneNode(true), phone);
+    freezeHeaderHover();
+  }
+
+  function contentReady() {
+    const h1 = document.querySelector('[data-framer-name="Hero"] h1');
+    const text = (h1?.textContent || "").replace(/\s+/g, " ").trim();
+    if (/^Haze Dev$/i.test(text)) return true;
+    const cta = document.querySelector('a[data-framer-name="Light"] [data-haze-label="Haze Dev"]');
+    return !!cta;
+  }
+
+  function paint() {
+    if (document.documentElement.classList.contains("haze-painted")) return;
+    document.documentElement.classList.add("haze-painted");
   }
 
   function run() {
+    lockMeta();
     ensureHeader();
     window.HazeHero?.ensure();
     window.HazeBrand?.ensure();
@@ -24,6 +111,14 @@
     if (window.HazeBenefits) window.HazeBenefits.ensure();
     if (window.HazeComparison) window.HazeComparison.ensure();
     if (window.HazeCloseout) window.HazeCloseout.ensure();
+    document
+      .querySelectorAll(
+        '[data-framer-name="Case Study"], [data-framer-name="Testimonials"], [data-framer-name="Pricing"], [data-framer-name="FAQs"]',
+      )
+      .forEach((node) => {
+        node.style.display = "none";
+      });
+    if (contentReady()) paint();
   }
 
   let queued = false;
@@ -145,14 +240,31 @@
   }
 
   function begin() {
+    lockMeta();
     run();
     startBadge();
     const observer = new MutationObserver(schedule);
     observer.observe(document.getElementById("main") || document.body, { childList: true, subtree: true });
+    if (!window.__hazeTitleLock) {
+      window.__hazeTitleLock = true;
+      const headObserver = new MutationObserver(lockMeta);
+      headObserver.observe(document.head, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ["content"],
+      });
+      const title = document.querySelector("head title");
+      if (title) headObserver.observe(title, { childList: true, characterData: true, subtree: true });
+      window.setInterval(lockMeta, 250);
+    }
+    window.setTimeout(paint, 1200);
     whenFramer(() => {
       whenQuiet(() => {
         window.dispatchEvent(new Event("haze-settle"));
         run();
+        paint();
         revealHero();
         whenShown(present);
       });

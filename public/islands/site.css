@@ -1,3 +1,43 @@
+html[data-haze-home] [data-framer-name="Case Study"],
+html[data-haze-home] [data-framer-name="Testimonials"],
+html[data-haze-home] [data-framer-name="Pricing"],
+html[data-haze-home] [data-framer-name="FAQs"] {
+  display: none !important;
+}
+
+html[data-haze-home] nav[data-framer-name="Desktop Closed"],
+html[data-haze-home] nav.haze-pc-header,
+html[data-haze-home] nav[data-framer-name="Desktop Closed"] *,
+html[data-haze-home] nav.haze-pc-header * {
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-haze-home] nav[data-framer-name="Desktop Closed"] [data-framer-name="Mid"],
+html[data-haze-home] nav[data-framer-name="Desktop Closed"] .framer-jyjdtl,
+html[data-haze-home] nav.haze-pc-header [data-framer-name="Mid"],
+html[data-haze-home] nav.haze-pc-header .framer-jyjdtl {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+}
+
+html[data-haze-home] nav[data-framer-name="Desktop Closed"] [data-framer-name="Out"],
+html[data-haze-home] nav.haze-pc-header [data-framer-name="Out"] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  visibility: hidden !important;
+}
+
+html[data-haze-home] nav .haze-brand-green {
+  display: none !important;
+}
+
 html[data-haze-home] [data-framer-name="Hero"] {
   background-color: #000 !important;
   padding: 23px !important;

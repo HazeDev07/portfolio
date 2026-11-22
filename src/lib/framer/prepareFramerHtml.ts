@@ -193,6 +193,10 @@ function setMeta($: cheerio.CheerioAPI, origin: string, canonical: string) {
   $("head").append(`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
 }
 
+function stripHeaderMenu($: cheerio.CheerioAPI) {
+  $('[data-framer-name="Desktop Closed"] [data-framer-name="Out"], nav.haze-pc-header [data-framer-name="Out"]').remove();
+}
+
 function patchNav($: cheerio.CheerioAPI) {
   const map: Record<string, { href: string; label: string }> = {
     home: { href: "#inicio", label: "Início" },
@@ -203,6 +207,8 @@ function patchNav($: cheerio.CheerioAPI) {
 
   $("a").each((_, el) => {
     const link = $(el);
+    if (link.closest('[data-framer-name="Desktop Closed"], nav.haze-pc-header').length) return;
+    if (link.attr("data-framer-name") === "Out") return;
     const href = (link.attr("href") || "").trim().toLowerCase();
     const text = link.text().replace(/\s+/g, " ").trim().toLowerCase();
     let key = "";
@@ -263,7 +269,9 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
   removeComments($);
   scrubTemplateTraces($);
   setMeta($, origin, canonical);
+  stripHeaderMenu($);
   patchNav($);
+  stripHeaderMenu($);
 
   $('[data-framer-name="Logo + Menu Icon"] [data-framer-name="Logo"] [data-framer-component-type="SVG"]').each(
     (_, el) => {
@@ -417,8 +425,20 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     });
   });
 
+  if (!$("style[data-haze-fouc]").length) {
+    $("head").prepend(
+      `<style data-haze-fouc>html[data-haze-home]:not(.haze-painted) #main{opacity:0!important;pointer-events:none!important}html[data-haze-home].haze-painted #main{opacity:1!important;pointer-events:auto!important;transition:opacity .28s ease}html[data-haze-home] [data-framer-name="Case Study"],html[data-haze-home] [data-framer-name="Testimonials"],html[data-haze-home] [data-framer-name="Pricing"],html[data-haze-home] [data-framer-name="FAQs"]{display:none!important}html[data-haze-home] nav[data-framer-name="Desktop Closed"] [data-framer-name="Mid"],html[data-haze-home] nav[data-framer-name="Desktop Closed"] .framer-jyjdtl{width:48px!important;max-width:48px!important}html[data-haze-home] nav[data-framer-name="Desktop Closed"] [data-framer-name="Out"],html[data-haze-home] nav.haze-pc-header [data-framer-name="Out"]{display:none!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important;overflow:hidden!important;position:absolute!important;visibility:hidden!important}html[data-haze-home] nav[data-framer-name="Desktop Closed"],html[data-haze-home] nav[data-framer-name="Desktop Closed"] *{transition:none!important;animation:none!important}</style>`,
+    );
+  }
+
+  if (!$("script[data-haze-title-lock]").length) {
+    $("head").prepend(
+      `<script data-haze-title-lock>(function(){var T=${JSON.stringify(TITLE)};var D=${JSON.stringify(DESC)};function applyTitle(){try{var n=document.querySelector("title");if(!n){n=document.createElement("title");document.head&&document.head.appendChild(n)}if(n.textContent!==T)n.textContent=T}catch(e){}try{if(document.title!==T)document.title=T}catch(e){}}function lockMeta(){applyTitle();document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"],meta[name="twitter:title"],meta[name="twitter:description"]').forEach(function(m){var k=m.getAttribute("property")||m.getAttribute("name")||"";var v=k.indexOf("title")>=0?T:D;if(m.getAttribute("content")!==v)m.setAttribute("content",v)})}try{var desc=Object.getOwnPropertyDescriptor(Document.prototype,"title");Object.defineProperty(document,"title",{configurable:true,enumerable:true,get:function(){return T},set:function(){applyTitle()}});if(desc&&desc.set){var rawSet=desc.set;Object.defineProperty(Document.prototype,"title",{configurable:true,enumerable:true,get:function(){return T},set:function(){try{rawSet.call(this,T)}catch(e){}applyTitle()}})}}catch(e){}lockMeta();document.addEventListener("DOMContentLoaded",lockMeta);setInterval(lockMeta,250);try{new MutationObserver(lockMeta).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["content"]})}catch(e){}})();</script>`,
+    );
+  }
+
   if (!$("link[data-haze-css]").length) {
-    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=34" />');
+    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=38" />');
     $("head").append('<link data-haze-steps rel="stylesheet" href="/islands/steps.css?v=8" />');
     $("head").append('<link data-haze-solutions rel="stylesheet" href="/islands/solutions.css?v=10" />');
     $("head").append('<link data-haze-benefits rel="stylesheet" href="/islands/benefits.css?v=6" />');
@@ -426,15 +446,15 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
   }
   const scripts = [
     "/islands/haze-react.js?v=12",
-    "/islands/hero.js?v=20",
-    "/islands/brand.js?v=7",
+    "/islands/hero.js?v=21",
+    "/islands/brand.js?v=8",
     "/islands/appear.js?v=8",
     "/islands/steps.js?v=6",
     "/islands/solutions.js?v=8",
     "/islands/benefits.js?v=3",
     "/islands/comparison.js?v=1",
     "/islands/closeout.js?v=5",
-    "/islands/boot.js?v=18",
+    "/islands/boot.js?v=23",
   ];
   for (const src of scripts) {
     if (!$(`script[src="${src}"]`).length) $("body").append(`<script src="${src}" defer></script>`);

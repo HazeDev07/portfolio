@@ -38,6 +38,7 @@
       "pointermove",
       (event) => {
         document.querySelectorAll("[data-haze-brand]").forEach((brand) => {
+          if (brand.closest("nav")) return;
           const green = brand.querySelector(".haze-brand-green");
           if (!green) return;
           const rect = brand.getBoundingClientRect();
