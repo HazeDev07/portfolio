@@ -52,25 +52,25 @@ function paintLight(el: HTMLElement) {
   }
   if (!lightRoot) lightRoot = createRoot(el);
   lightHost = el;
-  const tall = window.innerHeight / Math.max(window.innerWidth, 1) > 1.25;
+  const tall = window.innerHeight / Math.max(window.innerWidth, 1) > 1.2;
   lightRoot.render(
     <Lightfall
-      colors={["#0a4a32", "#087a52", "#00ffae"]}
+      colors={["#0a4a32", "#0d6b48", "#14c98a", "#00ffae"]}
       backgroundColor="#02311d"
-      speed={0.45}
-      streakCount={tall ? 7 : 5}
-      streakWidth={0.85}
-      streakLength={tall ? 1.15 : 1.45}
-      backgroundGlow={0.16}
-      glow={1.7}
-      depth={tall ? 1.35 : 1.8}
-      density={tall ? 1.55 : 0.95}
+      speed={0.42}
+      streakCount={tall ? 9 : 5}
+      streakWidth={0.7}
+      streakLength={tall ? 0.95 : 1.4}
+      backgroundGlow={0.14}
+      glow={1.55}
+      depth={tall ? 1.1 : 1.75}
+      density={tall ? 2.05 : 1}
       mouseStrength={0}
       mouseInteraction={false}
-      bloom={0.18}
-      zoom={tall ? 1.05 : 1.85}
-      twinkle={0.85}
-      headGlow={0.75}
+      bloom={0.16}
+      zoom={tall ? 0.68 : 1.8}
+      twinkle={0.9}
+      headGlow={0.7}
       intro={false}
       style={{ width: "100%", height: "100%" }}
     />,
