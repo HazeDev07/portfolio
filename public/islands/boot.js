@@ -20,6 +20,10 @@
     window.HazeBrand?.ensure();
     window.HazeAppear?.ensure();
     window.HazeSteps?.ensure();
+    if (window.HazeSolutions) window.HazeSolutions.ensure();
+    if (window.HazeBenefits) window.HazeBenefits.ensure();
+    if (window.HazeComparison) window.HazeComparison.ensure();
+    if (window.HazeCloseout) window.HazeCloseout.ensure();
   }
 
   let queued = false;

@@ -191,23 +191,30 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
 
   const intro = $('[data-framer-name="Intro"]');
   if (isHome && intro.length) {
-    intro.find("p.framer-styles-preset-tebz1a").first().text("Haze").addClass("haze-intro-mark");
+    intro.find("p.framer-styles-preset-tebz1a").first().text("Criatividade").addClass("haze-intro-mark");
     const sub = intro.find("h3 span").first();
-    if (sub.length) sub.text("Dev Fullstack");
-    else intro.find("h3").first().text("Dev Fullstack");
+    if (sub.length) sub.text("Sem limites para criar.");
+    else intro.find("h3").first().text("Sem limites para criar.");
   }
 
   if (!$("link[data-haze-css]").length) {
-    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=29" />');
+    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=33" />');
     $("head").append('<link data-haze-steps rel="stylesheet" href="/islands/steps.css?v=8" />');
+    $("head").append('<link data-haze-solutions rel="stylesheet" href="/islands/solutions.css?v=10" />');
+    $("head").append('<link data-haze-benefits rel="stylesheet" href="/islands/benefits.css?v=6" />');
+    $("head").append('<link data-haze-closeout rel="stylesheet" href="/islands/closeout.css?v=2" />');
   }
   const scripts = [
     "/islands/haze-react.js?v=12",
-    "/islands/hero.js?v=16",
+    "/islands/hero.js?v=19",
     "/islands/brand.js?v=6",
     "/islands/appear.js?v=8",
     "/islands/steps.js?v=6",
-    "/islands/boot.js?v=13",
+    "/islands/solutions.js?v=8",
+    "/islands/benefits.js?v=3",
+    "/islands/comparison.js?v=1",
+    "/islands/closeout.js?v=4",
+    "/islands/boot.js?v=17",
   ];
   for (const src of scripts) {
     if (!$(`script[src="${src}"]`).length) $("body").append(`<script src="${src}" defer></script>`);

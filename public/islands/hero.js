@@ -122,25 +122,85 @@
 
     const work = document.querySelector('[data-framer-name="Case Study"]');
     if (work && work.id !== "portfolio") work.id = "portfolio";
+    }
 
     const intro = document.querySelector('[data-framer-name="Intro"]');
     if (intro) {
       const mark = intro.querySelector("p.framer-styles-preset-tebz1a");
       if (mark) {
         mark.classList.add("haze-intro-mark");
-        if (norm(mark.textContent) !== "Haze") mark.textContent = "Haze";
+        if (norm(mark.textContent) !== "Criatividade") mark.textContent = "Criatividade";
+        fitIntroMark(mark);
       }
       const sub = intro.querySelector("h3 span") || intro.querySelector("h3");
-      if (sub && norm(sub.textContent) !== "Dev Fullstack") sub.textContent = "Dev Fullstack";
-    }
+      if (sub && norm(sub.textContent) !== "Sem limites para criar.") {
+        sub.textContent = "Sem limites para criar.";
+      }
     }
 
-    document.querySelectorAll("a[href*='duplicateType=siteTemplate'], a[href*='framer.link/1YNSJpf']").forEach((link) => {
-      const box = link.closest(".framer-1qebla2-container");
-      (box || link).remove();
-    });
+    document
+      .querySelectorAll(
+        "a[href*='duplicateType=siteTemplate'], a[href*='framer.link/1YNSJpf']",
+      )
+      .forEach((link) => {
+        const box = link.closest(".framer-1qebla2-container");
+        (box || link).remove();
+      });
     document.getElementById("__framer-badge-container")?.remove();
   }
+
+  function fitIntroMark(mark) {
+    if (!(mark instanceof HTMLElement)) return;
+    const available = Math.max(
+      0,
+      Math.floor(Math.min(window.innerWidth - 16, mark.parentElement?.clientWidth || window.innerWidth - 16)),
+    );
+    if (!available) return;
+
+    mark.style.removeProperty("font-size");
+    mark.style.removeProperty("--framer-font-size");
+
+    let lo = 18;
+    let hi = Math.min(window.innerWidth * 0.14, 220);
+    let best = lo;
+
+    while (lo <= hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      mark.style.setProperty("font-size", `${mid}px`, "important");
+      mark.style.setProperty("--framer-font-size", `${mid}px`, "important");
+      if (mark.scrollWidth <= available) {
+        best = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+
+    mark.style.setProperty("font-size", `${best}px`, "important");
+    mark.style.setProperty("--framer-font-size", `${best}px`, "important");
+  }
+
+  let introFitBound = false;
+  function bindIntroFit() {
+    if (introFitBound) return;
+    introFitBound = true;
+    let timer = 0;
+    const run = () => {
+      const mark = document.querySelector(
+        '[data-framer-name="Intro"] p.framer-styles-preset-tebz1a',
+      );
+      if (mark) fitIntroMark(mark);
+    };
+    window.addEventListener(
+      "resize",
+      () => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(run, 80);
+      },
+      { passive: true },
+    );
+  }
+  bindIntroFit();
 
   window.HazeHero = { ensure };
 })();
