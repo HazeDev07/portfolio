@@ -114,7 +114,9 @@
   }
 
   function ensure() {
-    if (location.pathname !== "/" && location.pathname !== "") return;
+    const base = (window.__HAZE_BASE__ || "").replace(/\/$/, "");
+    const path = (location.pathname || "/").replace(/\/$/, "") || "/";
+    if (path !== "/" && path !== base) return;
     const hero = document.querySelector('[data-framer-name="Hero"]');
     if (!hero) return;
     hero.querySelectorAll("video").forEach((video) => {
