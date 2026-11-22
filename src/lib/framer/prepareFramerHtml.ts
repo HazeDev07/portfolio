@@ -3,8 +3,13 @@ import path from "node:path";
 import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
 
+const SITE_NAME = "Haze";
+const TITLE = "Haze · Desenvolvedor Full Stack";
 const DESC =
-  "Desenvolvedor Full Stack. Gosto de criar App's e sistemas, diversificando diferentes linguagens e tecnologias.";
+  "Desenvolvedor Full Stack. Crio sites, aplicações e sistemas com criatividade, atenção aos detalhes e propósito.";
+const SHORT_DESC = "Sites, apps e sistemas desenvolvidos com criatividade e propósito.";
+const KEYWORDS =
+  "Haze, desenvolvedor full stack, portfólio, desenvolvimento web, Next.js, React, TypeScript, sistemas sob medida";
 
 const DISCORD = "https://discord.com/channels/@me/1178377773321035807";
 
@@ -37,7 +42,7 @@ const localImages = new Set(fs.existsSync(imageDir) ? fs.readdirSync(imageDir) :
 function rewriteAssets(html: string) {
   return html.replace(
     /https:\\?\/\\?\/framerusercontent\.com\\?\/images\\?\/([A-Za-z0-9._~-]+\.(?:png|jpe?g|webp|gif|svg|avif))/gi,
-    (full, name: string) => (localImages.has(name) ? `/images/framer/${name}` : full)
+    (full, name: string) => (localImages.has(name) ? `/images/framer/${name}` : full),
   );
 }
 
@@ -54,7 +59,7 @@ function rolling(label: string) {
 function techMarkup() {
   const icons = TECH.map(
     ([file, name]) =>
-      `<img class="haze-tech" data-tech="${file}" src="/images/tech/${file}.svg" alt="${name}" />`
+      `<img class="haze-tech" data-tech="${file}" src="/images/tech/${file}.svg" alt="${name}" />`,
   ).join("");
   return `<div class="haze-marquee" data-haze-marquee><div class="haze-marquee-track">${icons}${icons}</div></div>`;
 }
@@ -65,53 +70,215 @@ function mountBrand($: cheerio.CheerioAPI, box: cheerio.Cheerio<AnyNode>) {
   box.html(BRAND);
 }
 
+function removeComments($: cheerio.CheerioAPI) {
+  $("*")
+    .contents()
+    .each((_, node) => {
+      if (node.type === "comment") $(node).remove();
+    });
+}
+
+function setMeta($: cheerio.CheerioAPI, origin: string, canonical: string) {
+  const ogImage = `${origin}/images/brand/og.png`;
+
+  $("title").text(TITLE);
+  $('meta[name="description"]').attr("content", DESC);
+  if (!$('meta[name="description"]').length) {
+    $("head").append(`<meta name="description" content="${DESC}">`);
+  }
+
+  $('meta[name="keywords"]').remove();
+  $("head").append(`<meta name="keywords" content="${KEYWORDS}">`);
+  $('meta[name="author"]').remove();
+  $("head").append(`<meta name="author" content="${SITE_NAME}">`);
+  $('meta[name="theme-color"]').remove();
+  $("head").append('<meta name="theme-color" content="#0a0a0a">');
+  $('meta[name="robots"]').remove();
+  $("head").append('<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">');
+  $('meta[name="googlebot"]').remove();
+  $("head").append('<meta name="googlebot" content="index, follow">');
+  $('meta[name="language"]').remove();
+  $("head").append('<meta name="language" content="pt-BR">');
+  $('meta[http-equiv="content-language"]').remove();
+  $("head").append('<meta http-equiv="content-language" content="pt-BR">');
+
+  $('meta[name="generator"]').remove();
+  $('meta[name="framer-search-index"]').remove();
+  $('link[rel="alternate"][hreflang]').remove();
+
+  $('link[rel="canonical"]').attr("href", canonical);
+  if (!$('link[rel="canonical"]').length) {
+    $("head").append(`<link rel="canonical" href="${canonical}">`);
+  }
+
+  const og = {
+    "og:type": "website",
+    "og:locale": "pt_BR",
+    "og:site_name": SITE_NAME,
+    "og:url": canonical,
+    "og:title": TITLE,
+    "og:description": DESC,
+    "og:image": ogImage,
+    "og:image:secure_url": ogImage,
+    "og:image:type": "image/png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": TITLE,
+  };
+  for (const [property, content] of Object.entries(og)) {
+    const el = $(`meta[property="${property}"]`);
+    if (el.length) el.attr("content", content);
+    else $("head").append(`<meta property="${property}" content="${content}">`);
+  }
+
+  const twitter = {
+    "twitter:card": "summary_large_image",
+    "twitter:title": TITLE,
+    "twitter:description": DESC,
+    "twitter:image": ogImage,
+    "twitter:image:alt": TITLE,
+  };
+  for (const [name, content] of Object.entries(twitter)) {
+    const el = $(`meta[name="${name}"]`);
+    if (el.length) el.attr("content", content);
+    else $("head").append(`<meta name="${name}" content="${content}">`);
+  }
+
+  $('link[rel="icon"]').remove();
+  $('link[rel="apple-touch-icon"]').remove();
+  $("head").append('<link rel="icon" href="/images/brand/favicon.png" type="image/png">');
+  $("head").append('<link rel="apple-touch-icon" href="/images/brand/apple-touch.png">');
+
+  $('script[type="application/ld+json"]').remove();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${origin}/#website`,
+        url: canonical,
+        name: SITE_NAME,
+        description: DESC,
+        inLanguage: "pt-BR",
+        publisher: { "@id": `${origin}/#person` },
+      },
+      {
+        "@type": "Person",
+        "@id": `${origin}/#person`,
+        name: SITE_NAME,
+        url: canonical,
+        jobTitle: "Desenvolvedor Full Stack",
+        description: SHORT_DESC,
+        image: `${origin}/images/brand/logo.png`,
+        sameAs: [DISCORD],
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: TITLE,
+        description: DESC,
+        isPartOf: { "@id": `${origin}/#website` },
+        about: { "@id": `${origin}/#person` },
+        inLanguage: "pt-BR",
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: ogImage,
+          width: 1200,
+          height: 630,
+        },
+      },
+    ],
+  };
+  $("head").append(`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+}
+
+function patchNav($: cheerio.CheerioAPI) {
+  const map: Record<string, { href: string; label: string }> = {
+    home: { href: "#inicio", label: "Início" },
+    about: { href: "#sobre", label: "Sobre" },
+    blog: { href: "#solutions", label: "Projetos" },
+    contact: { href: DISCORD, label: "Discord" },
+  };
+
+  $("a").each((_, el) => {
+    const link = $(el);
+    const href = (link.attr("href") || "").trim().toLowerCase();
+    const text = link.text().replace(/\s+/g, " ").trim().toLowerCase();
+    let key = "";
+    if (href === "/" || href === "./" || href === "" || href === "./#" || text === "home") key = "home";
+    else if (href.includes("about") || text === "about") key = "about";
+    else if (href.includes("blog") || text === "blog") key = "blog";
+    else if (href.includes("contact") || text === "contact") key = "contact";
+    if (!key) return;
+    const item = map[key];
+    link.attr("href", item.href);
+    if (key === "contact") {
+      link.attr("target", "_blank");
+      link.attr("rel", "noopener noreferrer");
+    } else {
+      link.removeAttr("target");
+      link.removeAttr("rel");
+    }
+    if (link.children().length === 0) link.text(item.label);
+    else {
+      const leaf = link.find("p, span").last();
+      if (leaf.length) leaf.text(item.label);
+      else link.text(item.label);
+    }
+  });
+}
+
+function scrubTemplateTraces($: cheerio.CheerioAPI) {
+  $(
+    "a[href*='duplicateType=siteTemplate'], a[href*='framer.link/1YNSJpf'], a[href*='framer.com/projects']",
+  ).each((_, el) => {
+    const box = $(el).closest(".framer-1qebla2-container");
+    if (box.length) box.remove();
+    else $(el).remove();
+  });
+  $("#__framer-badge-container").remove();
+  $('script[src*="framer.com/edit"]').remove();
+  $("script").each((_, el) => {
+    const html = $(el).html() || "";
+    if (html.includes("__framer_force_showing_editorbar_since") || html.includes("framer.com/edit/init")) {
+      $(el).remove();
+    }
+  });
+
+  $(
+    '[data-framer-name="Case Study"], [data-framer-name="Testimonials"], [data-framer-name="Pricing"], [data-framer-name="FAQs"]',
+  ).remove();
+}
+
 export function prepareFramerHtml(html: string, page: { pathname: string; origin: string }) {
   const $ = cheerio.load(rewriteAssets(html));
   const origin = page.origin.replace(/\/$/, "");
   const pathname = page.pathname || "/";
   const canonical = `${origin}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 
-  $("html").attr("lang", "pt-BR");
+  $("html").attr("lang", "pt-BR").attr("data-haze-home", "1");
+  $("html").removeAttr("data-redirect-timezone");
 
-  $("title").each((_, el) => {
-    const text = $(el).text();
-    if (text.includes("Knotch - AI Automation")) $(el).text("Haze Dev");
-    else if (text.includes("My Framer Site")) $(el).text(text.replace("My Framer Site", "Haze Dev"));
-  });
+  removeComments($);
+  scrubTemplateTraces($);
+  setMeta($, origin, canonical);
+  patchNav($);
 
-  $('meta[property="og:title"]').each((_, el) => {
-    const text = $(el).attr("content") || "";
-    if (text.includes("Knotch - AI Automation")) $(el).attr("content", "Haze Dev");
-    else if (text.includes("My Framer Site")) $(el).attr("content", text.replace("My Framer Site", "Haze Dev"));
-  });
-
-  $('meta[name="description"], meta[property="og:description"]').each((_, el) => {
-    const text = $(el).attr("content") || "";
-    if (text.includes("Knotch is a sleek")) $(el).attr("content", DESC);
-  });
-
-  $('link[rel="canonical"]').attr("href", canonical);
-  $('meta[property="og:url"]').attr("content", canonical);
-  $('link[rel="icon"]').attr("href", "/images/brand/favicon.png").attr("type", "image/png");
-  $('link[rel="apple-touch-icon"]').attr("href", "/images/brand/apple-touch.png");
-  $('meta[property="og:image"]').attr("content", `${origin}/images/brand/og.png`);
-
-  $("a[href*='duplicateType=siteTemplate'], a[href*='framer.link/1YNSJpf']").each((_, el) => {
-    const box = $(el).closest(".framer-1qebla2-container");
-    if (box.length) box.remove();
-    else $(el).remove();
-  });
-  $("#__framer-badge-container").remove();
-
-  $('[data-framer-name="Logo + Menu Icon"] [data-framer-name="Logo"] [data-framer-component-type="SVG"]').each((_, el) => {
+  $('[data-framer-name="Logo + Menu Icon"] [data-framer-name="Logo"] [data-framer-component-type="SVG"]').each(
+    (_, el) => {
+      mountBrand($, $(el));
+    },
+  );
+  $(
+    '[data-framer-name="CTA"] [data-framer-name="Logo"] [data-framer-component-type="SVG"], [data-framer-name="Footer"] [data-framer-name="Logo"] [data-framer-component-type="SVG"]',
+  ).each((_, el) => {
     mountBrand($, $(el));
   });
-  $('[data-framer-name="CTA"] [data-framer-name="Logo"] [data-framer-component-type="SVG"], [data-framer-name="Footer"] [data-framer-name="Logo"] [data-framer-component-type="SVG"]').each((_, el) => {
-    mountBrand($, $(el));
-  });
-  $('[data-framer-name="CTA"] [data-framer-name="Logo"] p, [data-framer-name="Footer"] [data-framer-name="Logo"] p').each((_, el) => {
-    const text = $(el).text().replace(/\s+/g, " ").trim();
-    if (text === "Notch" || text === "Haze") $(el).text("Haze");
+  $(
+    '[data-framer-name="CTA"] [data-framer-name="Logo"] p, [data-framer-name="Footer"] [data-framer-name="Logo"] p',
+  ).each((_, el) => {
+    $(el).text("Haze");
   });
 
   const desktopNav = $('[data-framer-name="Desktop Closed"]').first();
@@ -129,10 +296,9 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     }
   }
 
-  const isHome = pathname === "/" || pathname === "";
-  if (isHome) $("html").attr("data-haze-home", "1");
   const hero = $('[data-framer-name="Hero"]');
-  if (isHome && hero.length) {
+  if (hero.length) {
+    hero.attr("id", "inicio");
     hero.find("h1").first().text("Haze Dev");
     hero.find('[data-framer-name="Heading + subheading"] p').first().text(DESC).addClass("haze-shine");
 
@@ -145,7 +311,7 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
       pill.find("p").first().text("Disponivel").addClass("haze-badge-label");
       shell.find(".haze-badge-side, .framer-1uas8sm").remove();
       shell.append(
-        '<div class="framer-1uas8sm" data-framer-component-type="RichTextContainer" data-haze="badge-side"><p class="framer-text framer-styles-preset-141u1yr" data-styles-preset="pAzayDUZg">Para Novos Projetos</p></div>'
+        '<div class="framer-1uas8sm" data-framer-component-type="RichTextContainer" data-haze="badge-side"><p class="framer-text framer-styles-preset-141u1yr" data-styles-preset="pAzayDUZg">Para Novos Projetos</p></div>',
       );
     });
 
@@ -166,7 +332,7 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     hero.find('a[data-framer-name="Dark"]').each((_, el) => {
       const link = $(el);
       link.addClass("haze-cta");
-      link.attr("href", "#portfolio");
+      link.attr("href", "#solutions");
       const p = link.find("p").first();
       p.addClass("haze-roll");
       p.attr("data-haze-label", "Meu Portfolio");
@@ -174,8 +340,11 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     });
 
     hero.find(".framer-fgh9n2").first().html(techMarkup());
-    $('[data-framer-name="Case Study"]').first().attr("id", "portfolio");
   }
+
+  $('[data-framer-name="Intro"]').attr("id", "sobre");
+  $('[data-framer-name="Solutions"]').attr("id", "solutions");
+  $('[data-framer-name="Benefits"]').attr("id", "beneficios");
 
   const stepsFile = path.join(process.cwd(), "public", "islands", "steps.html");
   if (fs.existsSync(stepsFile)) {
@@ -190,15 +359,66 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
   }
 
   const intro = $('[data-framer-name="Intro"]');
-  if (isHome && intro.length) {
+  if (intro.length) {
     intro.find("p.framer-styles-preset-tebz1a").first().text("Criatividade").addClass("haze-intro-mark");
     const sub = intro.find("h3 span").first();
     if (sub.length) sub.text("Sem limites para criar.");
     else intro.find("h3").first().text("Sem limites para criar.");
   }
 
+  $('[data-framer-name="Comparison"]').each((_, el) => {
+    const section = $(el);
+    section.find('[data-framer-name="Badge"] p').text("Comparativo");
+    section.find("h2").text("A diferença entre improvisar e desenvolver bem.");
+    section.find('[data-framer-name="Traditional"] p').text("Serviços improvisados");
+    section.find('[data-framer-name="Automated"] p').text("Meu desenvolvimento");
+    section.find("p").each((__, pEl) => {
+      const node = $(pEl);
+      const text = node.text().replace(/\s+/g, " ").trim();
+      if (/notch automation/i.test(text)) node.text("Meu desenvolvimento");
+      if (/traditional way/i.test(text) && !/vs/i.test(text)) node.text("Serviços improvisados");
+    });
+  });
+
+  $("section[data-framer-name='CTA']").each((_, el) => {
+    const section = $(el);
+    section.find("h2").text("Tem um projeto em mente?");
+    section.find('a[data-framer-name="Light"]').each((__, linkEl) => {
+      const link = $(linkEl);
+      link.attr("href", DISCORD);
+      link.attr("target", "_blank");
+      link.attr("rel", "noopener noreferrer");
+      const p = link.find("p").first();
+      p.attr("data-haze-label", "Conversar pelo Discord");
+      p.html(rolling("Conversar pelo Discord"));
+      const pad = link.find(".framer-esl6hy-container > div").first();
+      if (pad.length && !pad.find("[data-haze='discord']").length) pad.prepend(DISCORD_ICON);
+    });
+    section.find('a[data-framer-name="Dark"]').each((__, linkEl) => {
+      $(linkEl).attr("style", "display:none");
+    });
+  });
+
+  $('[data-framer-name="Footer"]').each((_, el) => {
+    const footer = $(el);
+    footer.find('[data-framer-name="Tagline"] p').text("Desenvolvendo ideias em soluções digitais.");
+    const news = footer.find('[data-framer-name="newsletter"]');
+    news.find("strong, p").first().text(
+      "Sites, aplicações e sistemas desenvolvidos com criatividade, atenção aos detalhes e propósito.",
+    );
+    news.find("form, input, button, .framer-auzm4l-container").remove();
+    news.attr("data-haze-footer-desc", "");
+
+    footer.find('[data-framer-name="Legals"] a').each((i, linkEl) => {
+      const link = $(linkEl);
+      link.removeAttr("href").removeAttr("target").removeAttr("rel");
+      if (i === 0) link.text("© 2026 Haze. Todos os direitos reservados.");
+      else if (i === 1) link.text("Feito por Haze.");
+    });
+  });
+
   if (!$("link[data-haze-css]").length) {
-    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=33" />');
+    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=34" />');
     $("head").append('<link data-haze-steps rel="stylesheet" href="/islands/steps.css?v=8" />');
     $("head").append('<link data-haze-solutions rel="stylesheet" href="/islands/solutions.css?v=10" />');
     $("head").append('<link data-haze-benefits rel="stylesheet" href="/islands/benefits.css?v=6" />');
@@ -206,19 +426,28 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
   }
   const scripts = [
     "/islands/haze-react.js?v=12",
-    "/islands/hero.js?v=19",
-    "/islands/brand.js?v=6",
+    "/islands/hero.js?v=20",
+    "/islands/brand.js?v=7",
     "/islands/appear.js?v=8",
     "/islands/steps.js?v=6",
     "/islands/solutions.js?v=8",
     "/islands/benefits.js?v=3",
     "/islands/comparison.js?v=1",
-    "/islands/closeout.js?v=4",
-    "/islands/boot.js?v=17",
+    "/islands/closeout.js?v=5",
+    "/islands/boot.js?v=18",
   ];
   for (const src of scripts) {
     if (!$(`script[src="${src}"]`).length) $("body").append(`<script src="${src}" defer></script>`);
   }
 
-  return $.html();
+  $("p, a, strong, h2, h3, span, li").each((_, el) => {
+    const node = $(el);
+    if (node.children().length) return;
+    const text = node.text();
+    if (!/notch/i.test(text)) return;
+    node.text(text.replace(/Notch/g, "Haze").replace(/notch/g, "Haze"));
+  });
+
+  removeComments($);
+  return $.html().replace(/<!--[\s\S]*?-->/g, "");
 }

@@ -114,14 +114,14 @@
       if (pad && !pad.querySelector("[data-haze='discord']")) pad.insertAdjacentHTML("afterbegin", ICON);
     });
     hero.querySelectorAll('a[data-framer-name="Dark"]').forEach((link) => {
-      paintLink(link, "Meu Portfolio", "#portfolio", false);
+      paintLink(link, "Meu Portfolio", "#solutions", false);
     });
 
     const dock = hero.querySelector(".framer-fgh9n2");
     if (dock && !dock.querySelector("[data-haze-marquee]")) dock.innerHTML = marquee();
 
-    const work = document.querySelector('[data-framer-name="Case Study"]');
-    if (work && work.id !== "portfolio") work.id = "portfolio";
+    const solutions = document.querySelector('[data-framer-name="Solutions"]');
+    if (solutions && solutions.id !== "solutions") solutions.id = "solutions";
     }
 
     const intro = document.querySelector('[data-framer-name="Intro"]');

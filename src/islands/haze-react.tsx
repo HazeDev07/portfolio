@@ -176,7 +176,7 @@ function boot() {
   });
 }
 
-function whenFramer(run) {
+function whenFramer(run: () => void) {
   let started = false;
   const go = () => {
     if (started) return;

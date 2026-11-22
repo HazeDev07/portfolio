@@ -16,7 +16,7 @@
     });
     document.querySelectorAll('[data-framer-name="CTA"] [data-framer-name="Logo"] p, [data-framer-name="Footer"] [data-framer-name="Logo"] p').forEach((node) => {
       const text = (node.textContent || "").replace(/\s+/g, " ").trim();
-      if (text === "Notch") node.textContent = "Haze";
+      if (text !== "Haze") node.textContent = "Haze";
     });
     document.querySelectorAll("img[src*='framerusercontent.com'], img[srcset*='framerusercontent.com']").forEach((img) => {
       const src = img.getAttribute("src") || "";

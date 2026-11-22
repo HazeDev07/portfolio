@@ -523,9 +523,3 @@ html[data-haze-home] [data-framer-name="Intro"] p.framer-styles-preset-tebz1a {
   }
 }
 
-html[data-haze-home] [data-framer-name="Case Study"],
-html[data-haze-home] [data-framer-name="Testimonials"],
-html[data-haze-home] [data-framer-name="Pricing"],
-html[data-haze-home] [data-framer-name="FAQs"] {
-  display: none !important;
-}
