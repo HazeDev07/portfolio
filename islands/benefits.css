@@ -1,0 +1,101 @@
+[data-framer-name="Benefits"] {
+  overflow: visible !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Heading"] {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Heading"] h2,
+[data-framer-name="Benefits"] [data-framer-name="Heading"] .framer-text {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 1.35em !important;
+  line-height: 1.35em !important;
+  padding-bottom: 0.18em !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Text"] {
+  overflow: hidden !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Text"] p {
+  font-size: 13.5px !important;
+  line-height: 1.3 !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Text"] p strong,
+[data-framer-name="Benefits"] [data-framer-name="Text"] strong {
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+}
+
+[data-framer-name="Benefits"] .haze-ben-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+  pointer-events: none;
+  z-index: 2;
+}
+
+[data-framer-name="Benefits"] .haze-ben-icon svg {
+  display: block;
+  width: 62%;
+  height: 62%;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Icon holder"] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Glow"] {
+  display: none !important;
+  filter: none !important;
+  opacity: 0 !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Logo border"] {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  filter: none !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Logo and Glow Container"],
+[data-framer-name="Benefits"] [data-framer-name="Logo holder"] {
+  filter: none !important;
+}
+
+[data-framer-name="Benefits"] [data-framer-name="Logo holder"] {
+  position: relative;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+[data-framer-name="Benefits"] .haze-ben-logo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+[data-framer-name="Benefits"] .haze-ben-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

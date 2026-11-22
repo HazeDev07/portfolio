@@ -1,0 +1,57 @@
+section[data-framer-name="CTA"] [data-framer-name="Content"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+section[data-framer-name="CTA"] .haze-cta-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+section[data-framer-name="CTA"] .haze-cta-badge p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+section[data-framer-name="CTA"] .haze-cta-desc {
+  max-width: 34rem;
+  margin: 10px auto 0;
+  text-align: center;
+}
+
+section[data-framer-name="CTA"] .haze-cta-desc p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+[data-framer-name="Footer"] [data-framer-name="newsletter"] form,
+[data-framer-name="Footer"] [data-framer-name="newsletter"] input,
+[data-framer-name="Footer"] [data-framer-name="newsletter"] button,
+[data-framer-name="Footer"] [data-framer-name="newsletter"] .framer-auzm4l-container {
+  display: none !important;
+}
+
+[data-framer-name="Footer"] [data-framer-name="newsletter"][data-haze-footer-desc] p,
+[data-framer-name="Footer"] [data-framer-name="newsletter"][data-haze-footer-desc] strong {
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+[data-framer-name="Footer"] [data-framer-name="Legals"] [data-framer-name="Links"] a,
+[data-framer-name="Footer"] [data-framer-name="Legals"] a {
+  pointer-events: none;
+  text-decoration: none !important;
+  cursor: default;
+}
