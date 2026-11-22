@@ -1,8 +1,25 @@
 (function () {
+  function ensureHeader() {
+    const narrow = window.matchMedia("(max-width: 809.98px)").matches;
+    if (!narrow) {
+      document.querySelectorAll("nav.haze-pc-header").forEach((node) => node.remove());
+      return;
+    }
+    if (document.querySelector('nav[data-framer-name="Desktop Closed"]')) return;
+    if (document.querySelector("nav.haze-pc-header")) return;
+    const phone = document.querySelector('[data-framer-name="Phone Closed"]');
+    const tpl = document.getElementById("haze-pc-header");
+    const node = tpl && tpl.content && tpl.content.firstElementChild;
+    if (!phone || !node || !phone.parentElement) return;
+    phone.parentElement.insertBefore(node.cloneNode(true), phone);
+  }
+
   function run() {
+    ensureHeader();
     window.HazeHero?.ensure();
     window.HazeBrand?.ensure();
     window.HazeAppear?.ensure();
+    window.HazeSteps?.ensure();
   }
 
   let queued = false;
@@ -161,6 +178,7 @@
     true
   );
 
+  window.addEventListener("resize", ensureHeader);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", begin);
   else begin();
 })();

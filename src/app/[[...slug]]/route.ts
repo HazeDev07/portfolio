@@ -41,7 +41,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
-  const key = `v26:${status}:${requested ?? "404"}:${origin}`;
+  const key = `v40:${status}:${requested ?? "404"}:${origin}`;
   let html = memory.get(key);
   if (!html) {
     html = prepareFramerHtml(raw, { pathname, origin });

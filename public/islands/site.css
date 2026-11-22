@@ -441,39 +441,35 @@ html[data-haze-home] [data-framer-name="Hero"] .framer-fgh9n2 {
   mask-image: radial-gradient(circle 46% at var(--hx, -80px) var(--hy, -80px), #000 0%, rgba(0, 0, 0, 0.45) 42%, transparent 72%);
 }
 
-[data-framer-name="Intro"] .framer-163vf16 {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  -webkit-mask: none !important;
-  mask: none !important;
-  opacity: 1 !important;
-}
-
-[data-framer-name="Intro"] .framer-1l9vq7t {
-  place-content: center !important;
-  justify-content: center !important;
-}
-
-[data-framer-name="Intro"] h3,
-[data-framer-name="Intro"] .framer-wbehpo {
-  text-align: center !important;
-}
-
-p.haze-intro-mark.framer-text {
-  --framer-font-size: 52px !important;
-  font-size: 52px !important;
-  line-height: 1.05em !important;
-  font-weight: 600 !important;
-  color: #fff !important;
-  --framer-text-color: #fff !important;
-}
-
 @media (max-width: 809.98px) {
-  p.haze-intro-mark.framer-text {
-    --framer-font-size: 34px !important;
-    font-size: 34px !important;
+  nav[data-framer-name^="Phone"],
+  .ssr-variant:has(nav[data-framer-name="Desktop Closed"]) ~ .ssr-variant:has(nav[data-framer-name="Phone Closed"]),
+  .framer-kvjt16-container:has(nav.haze-pc-header) nav[data-framer-name="Phone Closed"] {
+    display: none !important;
+  }
+
+  .ssr-variant:has(nav[data-framer-name="Desktop Closed"]),
+  .ssr-variant:has(nav[data-framer-name="Desktop Closed"]) .framer-kvjt16-container,
+  nav[data-framer-name="Desktop Closed"],
+  nav.haze-pc-header {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  nav[data-framer-name="Desktop Closed"] [data-framer-name="Base"],
+  nav.haze-pc-header [data-framer-name="Base"] {
+    place-content: flex-start center !important;
+    justify-content: flex-start !important;
+  }
+
+  nav[data-framer-name="Desktop Closed"] [data-framer-name="Top"],
+  nav.haze-pc-header [data-framer-name="Top"] {
+    height: 12px !important;
+  }
+
+  nav[data-framer-name="Desktop Closed"] [data-framer-name="Content"],
+  nav.haze-pc-header [data-framer-name="Content"] {
+    transform: translateY(-11px);
   }
 
   .haze-tech-text {

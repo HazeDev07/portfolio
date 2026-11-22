@@ -114,6 +114,21 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     if (text === "Notch" || text === "Haze") $(el).text("Haze");
   });
 
+  const desktopNav = $('[data-framer-name="Desktop Closed"]').first();
+  if (desktopNav.length) {
+    const variant = desktopNav.parents(".ssr-variant").first();
+    if (variant.length) {
+      const next = (variant.attr("class") || "").replace(/\bhidden-1j9zbg5\b/g, "").replace(/\s+/g, " ").trim();
+      variant.attr("class", next);
+    }
+    if (!$("#haze-pc-header").length) {
+      const copy = desktopNav.clone();
+      copy.addClass("haze-pc-header");
+      copy.removeAttr("data-framer-name");
+      $("body").append(`<template id="haze-pc-header">${$.html(copy)}</template>`);
+    }
+  }
+
   const isHome = pathname === "/" || pathname === "";
   if (isHome) $("html").attr("data-haze-home", "1");
   const hero = $('[data-framer-name="Hero"]');
@@ -162,6 +177,18 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     $('[data-framer-name="Case Study"]').first().attr("id", "portfolio");
   }
 
+  const stepsFile = path.join(process.cwd(), "public", "islands", "steps.html");
+  if (fs.existsSync(stepsFile)) {
+    const stepsHtml = fs.readFileSync(stepsFile, "utf8");
+    if (!$("#haze-steps-tpl").length) $("body").append(`<template id="haze-steps-tpl">${stepsHtml}</template>`);
+    $("section[data-framer-name='Process']").each((_, el) => {
+      const section = $(el);
+      if (!/How we help you get real results/i.test(section.text()) && !section.attr("data-haze-process")) return;
+      section.attr("data-haze-process", "1");
+      section.html(stepsHtml);
+    });
+  }
+
   const intro = $('[data-framer-name="Intro"]');
   if (isHome && intro.length) {
     intro.find("p.framer-styles-preset-tebz1a").first().text("Haze").addClass("haze-intro-mark");
@@ -171,14 +198,16 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
   }
 
   if (!$("link[data-haze-css]").length) {
-    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=25" />');
+    $("head").append('<link data-haze-css rel="stylesheet" href="/islands/site.css?v=29" />');
+    $("head").append('<link data-haze-steps rel="stylesheet" href="/islands/steps.css?v=8" />');
   }
   const scripts = [
     "/islands/haze-react.js?v=12",
     "/islands/hero.js?v=16",
     "/islands/brand.js?v=6",
     "/islands/appear.js?v=8",
-    "/islands/boot.js?v=11",
+    "/islands/steps.js?v=6",
+    "/islands/boot.js?v=13",
   ];
   for (const src of scripts) {
     if (!$(`script[src="${src}"]`).length) $("body").append(`<script src="${src}" defer></script>`);
