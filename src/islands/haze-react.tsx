@@ -2,7 +2,17 @@ import { createRoot, type Root } from "react-dom/client";
 import Lightfall from "../components/Lightfall/Lightfall";
 import TechText from "../components/TechText/TechText";
 
-const home = () => location.pathname === "/";
+const home = () => {
+  const base = (window.__HAZE_BASE__ || "").replace(/\/$/, "");
+  const path = (location.pathname || "/").replace(/\/$/, "") || "/";
+  return path === "/" || (!!base && path === base);
+};
+
+declare global {
+  interface Window {
+    __HAZE_BASE__?: string;
+  }
+}
 
 let lightRoot: Root | null = null;
 let lightHost: HTMLElement | null = null;
@@ -42,21 +52,25 @@ function paintLight(el: HTMLElement) {
   }
   if (!lightRoot) lightRoot = createRoot(el);
   lightHost = el;
+  const tall = window.innerHeight / Math.max(window.innerWidth, 1) > 1.25;
   lightRoot.render(
     <Lightfall
-      colors={["#023624", "#023624", "#023624"]}
+      colors={["#0a4a32", "#087a52", "#00ffae"]}
       backgroundColor="#02311d"
-      speed={0.5}
-      streakWidth={1}
-      streakLength={1.6}
-      backgroundGlow={0.18}
-      glow={1.95}
-      depth={2}
+      speed={0.45}
+      streakCount={tall ? 7 : 5}
+      streakWidth={0.85}
+      streakLength={tall ? 1.15 : 1.45}
+      backgroundGlow={0.16}
+      glow={1.7}
+      depth={tall ? 1.35 : 1.8}
+      density={tall ? 1.55 : 0.95}
       mouseStrength={0}
       mouseInteraction={false}
-      bloom={0.2}
-      zoom={2.2}
-      twinkle={1}
+      bloom={0.18}
+      zoom={tall ? 1.05 : 1.85}
+      twinkle={0.85}
+      headGlow={0.75}
       intro={false}
       style={{ width: "100%", height: "100%" }}
     />,
@@ -108,7 +122,6 @@ function mountLight() {
     el.setAttribute("aria-hidden", "true");
   }
   if (el.parentElement !== host) host.prepend(el);
-  if (lightHost === el) return;
   paintLight(el);
 }
 
@@ -169,6 +182,7 @@ function boot() {
   });
   observer.observe(root, { childList: true, subtree: true });
   window.addEventListener("resize", () => {
+    if (lightHost) paintLight(lightHost);
     const host = placeholder();
     if (!textHost || !host) return;
     const shift = anchorShift(host);

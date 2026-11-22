@@ -562,7 +562,10 @@ const Lightfall = ({
       const intro = state.intro;
       const presence = Math.min(1, intro * 2.2);
       const stretch = 1 + 5 * Math.pow(1 - intro, 2) + 2.5 * state.warp;
-      const rings = Math.max(1, Math.floor(TAU * Math.max(s.density, 0.05) + 0.5));
+      const aspect = Math.max(cssHeight / Math.max(cssWidth, 1), 1);
+      const density = s.density * Math.min(2.4, Math.max(1, Math.sqrt(aspect) * 1.05));
+      const zoom = s.zoom / Math.pow(aspect, 0.72);
+      const rings = Math.max(1, Math.floor(TAU * Math.max(density, 0.05) + 0.5));
       const period = TAU / rings;
       const clock = 9 + state.travel;
 
@@ -575,7 +578,7 @@ const Lightfall = ({
 
       const r = pass(scene, streakProgram);
       gl.uniform2f(r.uView, width, height);
-      gl.uniform1f(r.uZoom, s.zoom);
+      gl.uniform1f(r.uZoom, zoom);
       gl.uniform1f(r.uPhase, clock % (16 * period));
       gl.uniform1f(r.uTwinkleClock, clock % TAU);
       gl.uniform1f(r.uRings, rings);

@@ -461,7 +461,7 @@ export function prepareFramerHtml(html: string, page: { pathname: string; origin
     $("head").append(`<link data-haze-closeout rel="stylesheet" href="${asset("/islands/closeout.css?v=2")}" />`);
   }
   const scripts = [
-    asset("/islands/haze-react.js?v=13"),
+    asset("/islands/haze-react.js?v=14"),
     asset("/islands/hero.js?v=22"),
     asset("/islands/brand.js?v=9"),
     asset("/islands/appear.js?v=8"),
