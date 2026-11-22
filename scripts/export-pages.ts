@@ -8,10 +8,7 @@ const publicDir = path.join(root, "public");
 const sourceDir = path.join(root, "src", "content", "framer", "source");
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://hazedev07.github.io/portfolio").replace(
-  /\/$/,
-  "",
-);
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://hazedev.xyz").replace(/\/$/, "");
 
 function copyDir(from: string, to: string) {
   fs.mkdirSync(to, { recursive: true });
