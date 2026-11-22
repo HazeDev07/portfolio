@@ -1,6 +1,12 @@
 (function () {
-  const BRAND =
-    '<span class="haze-brand" data-haze-brand><img src="/images/brand/logo.png" alt="Haze" /><img class="haze-brand-green" src="/images/brand/logo-verde.png" alt="" /></span>';
+  function asset(path) {
+    const base = typeof window !== "undefined" && window.__HAZE_BASE__ ? window.__HAZE_BASE__ : "";
+    return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  }
+
+  function brandMarkup() {
+    return `<span class="haze-brand" data-haze-brand><img src="${asset("/images/brand/logo.png")}" alt="Haze" /><img class="haze-brand-green" src="${asset("/images/brand/logo-verde.png")}" alt="" /></span>`;
+  }
 
   function boxes() {
     return document.querySelectorAll(
@@ -12,7 +18,7 @@
     boxes().forEach((box) => {
       if (box.querySelector("[data-haze-brand]")) return;
       box.setAttribute("data-haze-brand-box", "");
-      box.innerHTML = BRAND;
+      box.innerHTML = brandMarkup();
     });
     document.querySelectorAll('[data-framer-name="CTA"] [data-framer-name="Logo"] p, [data-framer-name="Footer"] [data-framer-name="Logo"] p').forEach((node) => {
       const text = (node.textContent || "").replace(/\s+/g, " ").trim();
@@ -20,13 +26,13 @@
     });
     document.querySelectorAll("img[src*='framerusercontent.com'], img[srcset*='framerusercontent.com']").forEach((img) => {
       const src = img.getAttribute("src") || "";
-      const next = src.replace(/https?:\/\/framerusercontent\.com\/images\/([^?]+)/, "/images/framer/$1");
+      const next = src.replace(/https?:\/\/framerusercontent\.com\/images\/([^?]+)/, asset("/images/framer/$1"));
       if (next && next !== src && !next.endsWith("/")) img.setAttribute("src", next.split("?")[0]);
       const set = img.getAttribute("srcset");
       if (set && set.includes("framerusercontent.com")) {
         img.setAttribute(
           "srcset",
-          set.replace(/https?:\/\/framerusercontent\.com\/images\/([^?\s,]+)/g, "/images/framer/$1")
+          set.replace(/https?:\/\/framerusercontent\.com\/images\/([^?\s,]+)/g, asset("/images/framer/$1"))
         );
       }
     });

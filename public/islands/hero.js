@@ -57,15 +57,26 @@
     }
   }
 
+  function asset(path) {
+    const base = typeof window !== "undefined" && window.__HAZE_BASE__ ? window.__HAZE_BASE__ : "";
+    return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  }
+
+  function isHome() {
+    const base = (typeof window !== "undefined" && window.__HAZE_BASE__ ? window.__HAZE_BASE__ : "").replace(/\/$/, "");
+    const path = (location.pathname || "/").replace(/\/$/, "") || "/";
+    return path === "/" || path === base;
+  }
+
   function marquee() {
     const icons = TECH.map(
-      ([file, name]) => `<img class="haze-tech" data-tech="${file}" src="/images/tech/${file}.svg" alt="${name}" />`
+      ([file, name]) => `<img class="haze-tech" data-tech="${file}" src="${asset(`/images/tech/${file}.svg`)}" alt="${name}" />`
     ).join("");
     return `<div class="haze-marquee" data-haze-marquee><div class="haze-marquee-track">${icons}${icons}</div></div>`;
   }
 
   function ensure() {
-    const home = location.pathname === "/" || location.pathname === "";
+    const home = isHome();
     const hero = home ? document.querySelector('[data-framer-name="Hero"]') : null;
     if (hero) {
     hero.querySelectorAll("h1").forEach((node) => {

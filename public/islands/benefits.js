@@ -113,7 +113,8 @@
       mark = document.createElement("span");
       mark.className = "haze-ben-logo";
       mark.setAttribute("data-haze-ben-logo", "");
-      mark.innerHTML = '<img src="/images/brand/logo.png" alt="Haze" />';
+      const base = typeof window !== "undefined" && window.__HAZE_BASE__ ? window.__HAZE_BASE__ : "";
+      mark.innerHTML = `<img src="${base}/images/brand/logo.png" alt="Haze" />`;
       holder.appendChild(mark);
     }
   }
